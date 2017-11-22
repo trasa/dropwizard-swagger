@@ -61,8 +61,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <file.encoding>UTF-8</file.encoding>
         <javadoc.doclint.none>-Xdoclint:none</javadoc.doclint.none>
-        <jdk.version>1.8</jdk.version>
-        <swagger.version>1.5.16</swagger.version>
+        <swagger.version>1.5.17</swagger.version>
     </properties>
 
     <ciManagement>
