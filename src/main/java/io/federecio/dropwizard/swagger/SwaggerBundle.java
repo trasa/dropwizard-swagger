@@ -14,6 +14,12 @@
  */
 package io.federecio.dropwizard.swagger;
 
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.MediaType;
+
+import org.glassfish.jersey.process.Inflector;
+import org.glassfish.jersey.server.model.Resource;
+
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.assets.AssetsBundle;
@@ -63,15 +69,44 @@ public abstract class SwaggerBundle<T extends Configuration>
 
         FilterFactory.setFilter(new AuthParamFilter());
 
-        environment.jersey().register(new ApiListingResource());
+
+        if (swaggerBundleConfiguration.getViewUriRoot() == null) {
+            // original jersey registration -- no changes
+            environment.jersey().register(new ApiListingResource());
+        } else {
+            // override @Path on ApiListingResource to access swagger.json or swagger.yaml
+            Resource res = Resource.builder(ApiListingResource.class)
+                .path(swaggerBundleConfiguration.getViewUriRoot() + "/swagger.{type:json|yaml}")
+                .build();
+            environment.jersey().getResourceConfig().registerResources(res);
+        }
+
         environment.jersey().register(new SwaggerSerializers());
+
         if (swaggerBundleConfiguration.isIncludeSwaggerResource()) {
-            environment.jersey()
-                    .register(new SwaggerResource(
-                            configurationHelper.getUrlPattern(),
-                            swaggerBundleConfiguration
-                                    .getSwaggerViewConfiguration(),
-                            swaggerBundleConfiguration.getContextRoot()));
+
+
+            if (swaggerBundleConfiguration.getViewUriRoot() == null) {
+                // original jersey registration
+                final SwaggerResource swaggerResource = new SwaggerResource(
+                    configurationHelper.getUrlPattern(),
+                    swaggerBundleConfiguration.getSwaggerViewConfiguration(),
+                    swaggerBundleConfiguration.getContextRoot());
+                environment.jersey().register(swaggerResource);
+            } else {
+                final SwaggerResource swaggerResource = new SwaggerResource(
+                    configurationHelper.getUrlPattern(),
+                    swaggerBundleConfiguration.getSwaggerViewConfiguration(),
+                    swaggerBundleConfiguration.getViewUriRoot());
+
+                // need to override path from config vs @Path here, too:
+                Resource.Builder builder = Resource.builder()
+                    .path(swaggerBundleConfiguration.getViewUriRoot() + "/swagger");
+                builder.addMethod("GET")
+                    .produces(MediaType.TEXT_HTML)
+                    .handledBy((Inflector<ContainerRequestContext, SwaggerView>) containerRequestContext -> swaggerResource.get());
+                environment.jersey().getResourceConfig().registerResources(builder.build());
+            }
         }
     }
 

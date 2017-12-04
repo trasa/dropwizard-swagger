@@ -86,6 +86,43 @@ Additional Swagger configuration
 
 To see all the properties that can be used to customize Swagger see [SwaggerBundleConfiguration.java](src/main/java/io/federecio/dropwizard/swagger/SwaggerBundleConfiguration.java)
 
+
+### URL Configuration
+
+Three configuration values determine where and how swagger shows up in your application.
+
+#### Jersey Root Path
+
+This is where your dropwizard application lives. Logically your code considers 
+itself residing at `/` but this property can override that.
+For example: `/myapplication`  
+
+See server.applicationContextPath.
+
+#### uriPrefix
+
+Typically left unset.
+
+This is not a property for Swagger but for bundle to set up Swagger correctly. 
+It only needs to be used of the root path or the context path
+is set programmatically and therefore cannot be derived correctly. The
+problem arises in that if you set the root path or context path in the
+run() method in your Application subclass the bundle has already been
+initialized by that time and so does not know you set the path
+programmatically.
+
+#### viewUriRoot
+
+Swagger.json and the Swagger UI normally register themselves at `/swagger.json` 
+and `/swagger`. Assuming you had the server.applicationContextPath set to 
+`/myapplication`, this would locate swagger at `/myapplication/swagger.json` and 
+`/myapplication/swagger`. But what if you wanted the swagger UI to be at a different root?
+
+This value overrides where swagger, swagger.json, and swagger-asset are registered.
+For example, if viewUriRoot is `/docs` then the swagger.json file will be found at
+`/myapplication/docs/swagger.json`
+
+
 A note on Swagger 2
 -------------------
 

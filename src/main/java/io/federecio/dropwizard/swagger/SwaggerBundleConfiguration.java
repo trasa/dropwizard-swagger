@@ -69,6 +69,12 @@ public class SwaggerBundleConfiguration {
     @JsonProperty
     private String uriPrefix;
 
+    /**
+     * URI Root for the Swagger UI.
+     */
+    @JsonProperty
+    private String viewUriRoot;
+
     @JsonProperty
     public String getResourcePackage() {
         return resourcePackage;
@@ -177,6 +183,20 @@ public class SwaggerBundleConfiguration {
     @JsonProperty
     public void setUriPrefix(String uriPrefix) {
         this.uriPrefix = uriPrefix;
+    }
+
+    @JsonProperty
+    public String getViewUriRoot() {
+        return viewUriRoot;
+    }
+
+    public String getViewUriRootPath() {
+        return viewUriRoot == null ? "" : viewUriRoot;
+    }
+
+    @JsonProperty
+    public void setViewUriRoot(String viewUriRoot) {
+        this.viewUriRoot = viewUriRoot;
     }
 
     @JsonProperty

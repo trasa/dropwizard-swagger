@@ -93,7 +93,7 @@ public class ConfigurationHelper {
         final String jerseyRootPath = getJerseyRootPath();
         final String uriPathPrefix = jerseyRootPath.equals("/") ? ""
                 : jerseyRootPath;
-        return uriPathPrefix + "/swagger-static";
+        return uriPathPrefix + swaggerBundleConfiguration.getViewUriRootPath() + "/swagger-static";
     }
 
     private String getApplicationContextPath() {
