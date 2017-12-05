@@ -2,7 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.smoketurner</groupId>
+    <!--<groupId>com.smoketurner</groupId>-->
+    <groupId>com.meancat</groupId>
     <artifactId>dropwizard-swagger</artifactId>
     <version>1.0.5-5-SNAPSHOT</version>
 
@@ -29,6 +30,12 @@
             <email>jplock@smoketurner.com</email>
             <timezone>America/New_York</timezone>
         </developer>
+        <developer>
+            <id>trasa</id>
+            <name>Tony Rasa</name>
+            <email>trasa@meancat.com</email>
+            <timezone>America/Los_Angeles</timezone>
+        </developer>
     </developers>
 
     <distributionManagement>
@@ -49,10 +56,14 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:git:git://github.com:smoketurner/dropwizard-swagger.git</connection>
-        <developerConnection>scm:git:git@github.com:smoketurner/dropwizard-swagger.git</developerConnection>
-        <url>http://github.com/smoketurner/dropwizard-swagger</url>
-        <tag>v1.0.5-4</tag>
+        <!--<connection>scm:git:git://github.com:smoketurner/dropwizard-swagger.git</connection>-->
+        <!--<developerConnection>scm:git:git@github.com:smoketurner/dropwizard-swagger.git</developerConnection>-->
+        <!--<url>http://github.com/smoketurner/dropwizard-swagger</url>-->
+        <!-- forked for viewUrl support: -->
+        <connection>scm:git:git://github.com:trasa/dropwizard-swagger.git</connection>
+        <developerConnection>scm:git:git@github.com:trasa/dropwizard-swagger.git</developerConnection>
+        <url>http://github.com/trasa/dropwizard-swagger</url>
+        <tag>v1.0.5-5</tag>
     </scm>
 
     <properties>
@@ -152,10 +163,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>
-                            <passphrase>${gpg.passphrase}</passphrase>
-                            <keyname>8812F4E9</keyname>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
