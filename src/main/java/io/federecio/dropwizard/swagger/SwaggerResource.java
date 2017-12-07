@@ -24,22 +24,20 @@ import javax.ws.rs.core.MediaType;
 public class SwaggerResource {
     private final SwaggerViewConfiguration config;
     private final String contextRoot;
+    private final String swaggerAssetsPath;
+    private final String swaggerJsonPath;
     private final String urlPattern;
 
-    public SwaggerResource(String urlPattern, SwaggerViewConfiguration config) {
-        this.urlPattern = urlPattern;
-        this.config = config;
-        this.contextRoot = "/";
-    }
-
-    public SwaggerResource(String urlPattern, SwaggerViewConfiguration config, String contextRoot) {
+    public SwaggerResource(String urlPattern, SwaggerViewConfiguration config, String contextRoot, String swaggerAssetsPath, String swaggerJsonPath) {
         this.config = config;
         this.urlPattern = urlPattern;
         this.contextRoot = contextRoot;
+        this.swaggerAssetsPath = swaggerAssetsPath;
+        this.swaggerJsonPath = swaggerJsonPath;
     }
 
     @GET
     public SwaggerView get() {
-        return new SwaggerView(contextRoot, urlPattern, config);
+        return new SwaggerView(contextRoot, urlPattern, config, swaggerAssetsPath, swaggerJsonPath);
     }
 }

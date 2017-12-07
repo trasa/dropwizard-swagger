@@ -61,8 +61,11 @@ public abstract class SwaggerBundle<T extends Configuration>
 
         final ConfigurationHelper configurationHelper = new ConfigurationHelper(
                 configuration, swaggerBundleConfiguration);
+
+        // resourcePath is where in the /src/main/resources structure these files are located.
+        // not related to context paths and other stuff like that.
         new AssetsBundle("/swagger-static",
-                configurationHelper.getSwaggerUriPath(), null, "swagger-assets")
+                configurationHelper.getSwaggerAssetBundleServletPath(), null, "swagger-assets")
                         .run(environment);
 
         swaggerBundleConfiguration.build(configurationHelper.getUrlPattern());
@@ -76,7 +79,7 @@ public abstract class SwaggerBundle<T extends Configuration>
         } else {
             // override @Path on ApiListingResource to access swagger.json or swagger.yaml
             Resource res = Resource.builder(ApiListingResource.class)
-                .path(swaggerBundleConfiguration.getViewUriRoot() + "/swagger.{type:json|yaml}")
+                .path(configurationHelper.getSwaggerJsonUriPath() + "/swagger.{type:json|yaml}")
                 .build();
             environment.jersey().getResourceConfig().registerResources(res);
         }
@@ -84,24 +87,20 @@ public abstract class SwaggerBundle<T extends Configuration>
         environment.jersey().register(new SwaggerSerializers());
 
         if (swaggerBundleConfiguration.isIncludeSwaggerResource()) {
-
+            final SwaggerResource swaggerResource = new SwaggerResource(
+                configurationHelper.getUrlPattern(),
+                swaggerBundleConfiguration.getSwaggerViewConfiguration(),
+                configurationHelper.getSwaggerUriPath(),
+                configurationHelper.getSwaggerStaticUriPath(),
+                configurationHelper.getSwaggerClientPath());
 
             if (swaggerBundleConfiguration.getViewUriRoot() == null) {
                 // original jersey registration
-                final SwaggerResource swaggerResource = new SwaggerResource(
-                    configurationHelper.getUrlPattern(),
-                    swaggerBundleConfiguration.getSwaggerViewConfiguration(),
-                    swaggerBundleConfiguration.getContextRoot());
                 environment.jersey().register(swaggerResource);
             } else {
-                final SwaggerResource swaggerResource = new SwaggerResource(
-                    configurationHelper.getUrlPattern(),
-                    swaggerBundleConfiguration.getSwaggerViewConfiguration(),
-                    swaggerBundleConfiguration.getViewUriRoot());
-
                 // need to override path from config vs @Path here, too:
                 Resource.Builder builder = Resource.builder()
-                    .path(swaggerBundleConfiguration.getViewUriRoot() + "/swagger");
+                    .path(configurationHelper.getSwaggerUIUriPath() + "/swagger");
                 builder.addMethod("GET")
                     .produces(MediaType.TEXT_HTML)
                     .handledBy((Inflector<ContainerRequestContext, SwaggerView>) containerRequestContext -> swaggerResource.get());

@@ -20,16 +20,16 @@ import io.restassured.RestAssured;
 public abstract class DropwizardNoSwaggerTest extends DropwizardCommonTest {
 
     protected DropwizardNoSwaggerTest(int port, String basePath) {
-        super(port, basePath);
+        super(port, basePath, basePath);
     }
 
     @Test
     public void swaggerIsAvailable() throws Exception {
         RestAssured.expect().statusCode(HttpStatus.NOT_FOUND_404).when()
-                .get(Path.from(basePath, "swagger.json"));
+                .get(Path.from(expectedSwaggerRootPath, "swagger.json"));
         RestAssured.expect().statusCode(HttpStatus.NOT_FOUND_404).when()
-                .get(Path.from(basePath, "swagger"));
+                .get(Path.from(expectedSwaggerRootPath, "swagger"));
         RestAssured.expect().statusCode(HttpStatus.NOT_FOUND_404).when()
-                .get(Path.from(basePath, "swagger") + "/");
+                .get(Path.from(expectedSwaggerRootPath, "swagger") + "/");
     }
 }

@@ -30,10 +30,12 @@ public abstract class DropwizardCommonTest {
 
     protected final int port;
     protected final Path basePath;
+    protected final Path expectedSwaggerRootPath;
 
-    protected DropwizardCommonTest(int port, String basePath) {
+    protected DropwizardCommonTest(int port, String basePath, String expectedSwaggerRootPath) {
         this.port = port;
         this.basePath = Path.from(basePath);
+        this.expectedSwaggerRootPath = Path.from(expectedSwaggerRootPath);
     }
 
     @Before

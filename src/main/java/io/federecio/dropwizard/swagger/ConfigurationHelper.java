@@ -89,13 +89,130 @@ public class ConfigurationHelper {
         return urlPattern;
     }
 
-    public String getSwaggerUriPath() {
+    /**
+     * Return the full path to where the swagger UI should be located
+     * from the point of view of the client.
+     *
+     * This is the path that the client will use to access swagger.json,
+     * /swagger-static, and so on.
+     *
+     * Examples:
+     *  Example 1 - nothing set:
+     *      AppContext = (unset)
+     *      uriPrefix = (unset)
+     *      view = (unset)
+     *  Result: ""
+     *
+     *  Example 2 - appContext is /
+     *      AppContext = /
+     *      uriPrefix = (unset)
+     *      view = (unset)
+     *  Result: ""
+     *
+     * Example 3 - appContext is set
+     *      AppContext = /app
+     *      uriPrefix = (unset)
+     *      view = (unset)
+     * Result: "/app"
+     *
+     * Example 4 - uriPrefix is /api
+     *      AppContext = /
+     *      uriPrefix = /api
+     *      view = (unset)
+     * Result: "/api"
+     */
+    public String getSwaggerClientPath() {
+        String appContext = trimPath(getApplicationContextPath());
+        String jerseyRoot = trimPath(getJerseyRootPath());
+        String viewUri = trimPath(swaggerBundleConfiguration.getViewUriRootPath());
+
+        // if jerseyRoot and appContext are both / then just use /
+        // else if jersey == / and appContext is something else, use appContext
+        // else if jersey != / and appContext == /, use jersey
+        // if both are set, combine them
+        String root;
+        if ("/".equals(jerseyRoot) && "/".equals(appContext)) {
+            root = "/";
+        } else if ("/".equals(jerseyRoot)) {
+            root = appContext;
+        } else if ("/".equals(appContext)) {
+            root = jerseyRoot;
+        } else {
+            root = appContext + jerseyRoot;
+        }
+        String x = root + viewUri;
+        return x;
+    }
+    /**
+     * Locate the path to where swagger-static asset bundle is loaded,
+     * this is relative to application context as it is a servlet.
+     * (not the point of view of the client)
+     * TODO examples
+     * /swagger-static which could map to /appcontext/swagger-static
+     * /docs/swagger-static which maps to /appcontext/docs/swagger-static
+     *
+     * @return path to /swagger-static from the point of view of the application
+     *
+     */
+    public String getSwaggerAssetBundleServletPath() {
         final String jerseyRootPath = getJerseyRootPath();
-        final String uriPathPrefix = jerseyRootPath.equals("/") ? ""
-                : jerseyRootPath;
-        return uriPathPrefix + swaggerBundleConfiguration.getViewUriRootPath() + "/swagger-static";
+        final String uriPathPrefix = trimPath(jerseyRootPath);
+        String x = uriPathPrefix + swaggerBundleConfiguration.getViewUriRootPath() + "/swagger-static";
+        return x;
     }
 
+    /**
+     * Locate the full path where the swagger-static assets should be found.
+     * This path needs to consider application context, servlet-paths do not.
+     *
+     * @return path to /swagger-static from the point of view of the client browser
+     */
+    public String getSwaggerStaticUriPath() {
+        return getSwaggerClientPath() + "/swagger-static";
+    }
+
+    /**
+     * Locate the path where swagger UI should be found from the point of view of the application.
+     */
+    public String getSwaggerUriPath() {
+        final String jerseyRootPath = getJerseyRootPath();
+        final String uriPathPrefix = jerseyRootPath.equals("/") ? "" : jerseyRootPath;
+        String x =  uriPathPrefix + swaggerBundleConfiguration.getViewUriRootPath();
+        return x;
+    }
+
+    /**
+     * Directory where swagger.json can be found
+     */
+    public String getSwaggerJsonUriPath() {
+        return swaggerBundleConfiguration.getViewUriRootPath();
+    }
+
+    /**
+     * Directory where swagger UI can be found
+     * @return
+     */
+    public String getSwaggerUIUriPath() {
+        return swaggerBundleConfiguration.getViewUriRootPath();
+    }
+
+    private String trimPath(String path) {
+        if (path == null) {
+            return null;
+        }
+        return path.equals("/") ? "" : path;
+    }
+    /**
+     * Get the Application Context Path from the current configuration.
+     * For example from .yaml:
+     * <pre>
+     *      server:
+     *          applicationContextPath: /app
+     * </pre>
+     * would return "/app"
+     *
+     * @return applicationContext path
+     */
     private String getApplicationContextPath() {
         final ServerFactory serverFactory = configuration.getServerFactory();
 

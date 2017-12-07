@@ -26,28 +26,21 @@ import io.dropwizard.views.View;
  */
 public class SwaggerView extends View {
 
-    private static final String SWAGGER_URI_PATH = "/swagger-static";
-
     private final String swaggerAssetsPath;
-    private final String contextPath;
+    private final String swaggerJsonPath;
 
     private final SwaggerViewConfiguration viewConfiguration;
 
     public SwaggerView(@Nonnull final String contextRoot,
                        @Nonnull final String urlPattern,
-                       @Nonnull SwaggerViewConfiguration config) {
+                       @Nonnull SwaggerViewConfiguration config,
+                       @Nonnull final String swaggerAssetPath,
+                       @Nonnull final String swaggerJsonPath) {
         super(config.getTemplateUrl(), StandardCharsets.UTF_8);
 
-        String contextRootPrefix = "/".equals(contextRoot) ? "" : contextRoot;
 
-        if (!contextRootPrefix.isEmpty()) { //swagger-static should be found on the root context
-            swaggerAssetsPath = contextRootPrefix + SWAGGER_URI_PATH;
-        }
-        else {
-            swaggerAssetsPath = (urlPattern.equals("/") ? SWAGGER_URI_PATH : (urlPattern + SWAGGER_URI_PATH));
-        }
-
-        contextPath = urlPattern.equals("/") ? contextRootPrefix : (contextRootPrefix + urlPattern);
+        this.swaggerAssetsPath = swaggerAssetPath;
+        this.swaggerJsonPath = swaggerJsonPath;
 
         this.viewConfiguration = config;
     }
@@ -68,12 +61,12 @@ public class SwaggerView extends View {
     }
 
     /**
-     * Returns the path with with which all requests made by Swagger's UI to
-     * Resources need to be prefixed
+     * Return the path to the location of the swagger.json file
      */
-    public String getContextPath() {
-        return contextPath;
+    public String getSwaggerJsonPath() {
+        return swaggerJsonPath;
     }
+
 
     /**
      * Returns the location of the validator URL or null to disable

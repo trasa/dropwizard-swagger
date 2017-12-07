@@ -21,8 +21,13 @@ import io.restassured.RestAssured;
 
 public abstract class DropwizardTest extends DropwizardCommonTest {
 
+
     protected DropwizardTest(int port, String basePath) {
-        super(port, basePath);
+        super(port, basePath, basePath);
+    }
+
+    protected DropwizardTest(int port, String basePath, String expectedSwaggerRoot) {
+        super(port, basePath, expectedSwaggerRoot);
     }
 
     @Test
@@ -30,10 +35,10 @@ public abstract class DropwizardTest extends DropwizardCommonTest {
         RestAssured.expect().statusCode(HttpStatus.OK_200)
                 .body(StringContains
                         .containsString(TestResource.OPERATION_DESCRIPTION))
-                .when().get(Path.from(basePath, "swagger.json"));
+                .when().get(Path.from(expectedSwaggerRootPath, "swagger.json"));
         RestAssured.expect().statusCode(HttpStatus.OK_200).when()
-                .get(Path.from(basePath, "swagger"));
+                .get(Path.from(expectedSwaggerRootPath, "swagger"));
         RestAssured.expect().statusCode(HttpStatus.OK_200).when()
-                .get(Path.from(basePath, "swagger") + "/");
+                .get(Path.from(expectedSwaggerRootPath, "swagger") + "/");
     }
 }

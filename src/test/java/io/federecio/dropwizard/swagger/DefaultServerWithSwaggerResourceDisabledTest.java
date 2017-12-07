@@ -30,7 +30,7 @@ public class DefaultServerWithSwaggerResourceDisabledTest
                     "test-default-without-swagger-resource.yaml"));
 
     public DefaultServerWithSwaggerResourceDisabledTest() {
-        super(RULE.getLocalPort(), "/");
+        super(RULE.getLocalPort(), "/", "/");
     }
 
     @Test
